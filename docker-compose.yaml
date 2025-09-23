@@ -1,0 +1,10 @@
+services:
+  test1:
+    image: sl4utin/docker-cloud-maga
+    ports:
+      - 9900:8080
+
+  test2:
+    image: sl4utin/docker-cloud-maga
+    ports:
+      - 9090:8080

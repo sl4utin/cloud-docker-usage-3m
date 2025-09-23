@@ -1,0 +1,12 @@
+body {
+    background-color: #aaaaaa;
+    font-family: Arial, sans-serif;
+    text-align: center;
+}
+
+p.greeting {
+    color: darkblue;
+    font-size: 24px;
+    font-weight: bold;
+    margin-top: 40px;
+}
