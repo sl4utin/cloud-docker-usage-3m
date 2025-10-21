@@ -1,7 +1,71 @@
 body {
-    background-color: #aaaaaa;
+    background-color: #b3e5fc;
     font-family: Arial, sans-serif;
     text-align: center;
+    margin: 0;
+    padding: 0;
+}
+
+h2 {
+    color: #01579b;
+    margin-top: 30px;
+}
+
+.create-form, .delete-form {
+    margin: 20px auto;
+}
+
+input[type="text"], input[type="file"] {
+    padding: 8px;
+    border: 1px solid #90caf9;
+    border-radius: 6px;
+    width: 250px;
+}
+
+button {
+    background-color: #0288d1;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #0277bd;
+}
+
+table {
+    width: 50%;
+    margin: 20px auto;
+    border-collapse: collapse;
+    background-color: white;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+th, td {
+    border: 1px solid #81d4fa;
+    padding: 10px;
+    text-align: left;
+}
+
+th {
+    background-color: #03a9f4;
+    color: white;
+}
+
+tr:nth-child(even) {
+    background-color: #e1f5fe;
+}
+
+a {
+    color: #0288d1;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
 }
 
 p.greeting {

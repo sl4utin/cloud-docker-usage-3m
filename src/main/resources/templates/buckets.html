@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Bucket List</title>
+    <link rel="stylesheet" th:href="@{/styles.css}">
+</head>
+<body>
+<h2>Bucket List</h2>
+
+<form action="/s3/buckets/create" method="post">
+    <input type="text" name="name" placeholder="Type new bucket name" required/>
+    <button type="submit">Create</button>
+</form>
+
+<table>
+    <tr><th>Name</th><th style="width: 100px;">Action</th></tr>
+    <tr th:each="b : ${buckets}">
+        <td>
+            <a th:href="@{'/s3/' + ${b.name()} + '/objects'}"
+               th:text="${b.name()}"></a>
+        </td>
+        <td>
+            <form th:action="@{/s3/buckets/delete}" method="post" style="display:inline">
+                <input type="hidden" name="name" th:value="${b.name()}"/>
+                <button type="submit">Delete</button>
+            </form>
+        </td>
+    </tr>
+</table>
+</body>
+</html>

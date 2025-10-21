@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Bucket Items</title>
+    <link rel="stylesheet" th:href="@{/styles.css}">
+</head>
+<body>
+<h2 th:text="'Bucket: ' + ${bucketName}"></h2>
+
+<form th:action="@{'/s3/' + ${bucketName} + '/upload'}" method="post" enctype="multipart/form-data">
+    <input type="file" name="file" id="fileInput"/>
+    <button type="submit" id="uploadBtn" disabled>Upload</button>
+</form>
+<script>
+    const fileInput = document.getElementById('fileInput');
+    const uploadBtn = document.getElementById('uploadBtn');
+
+    fileInput.addEventListener('change', () => {
+        uploadBtn.disabled = !fileInput.files.length;
+    });
+</script>
+<table>
+    <tr><th>File</th><th>Size</th><th style="width: 100px;">Action</th></tr>
+    <tr th:each="obj : ${objects}">
+        <td>
+            <a th:href="@{'/s3/' + ${bucketName} + '/file/' + ${obj.key()}}"
+               th:text="${obj.key()}" target="_blank"></a>
+        </td>
+        <td th:text="${obj.size()}"></td>
+        <td>
+            <form th:action="@{'/s3/' + ${bucketName} + '/delete'}" method="post" style="display:inline">
+                <input type="hidden" name="key" th:value="${obj.key()}"/>
+                <button type="submit">Delete</button>
+            </form>
+        </td>
+    </tr>
+</table>
+<form th:action="@{/s3/buckets}" method="get">
+    <button type="submit">Back to buckets list</button>
+</form>
+</body>
+</html>
