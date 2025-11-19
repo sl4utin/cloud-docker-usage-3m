@@ -1,13 +1,19 @@
 package com.example.DockerCloudMAGA.controllers;
 
 import com.example.DockerCloudMAGA.service.S3Service;
+import com.example.DockerCloudMAGA.service.DrawVisionService;
+import com.example.DockerCloudMAGA.utils.ByteArrayMultipartFile;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.services.s3.model.HeadObjectResponse;
+
+import org.springframework.web.client.RestTemplate;
+import org.springframework.mock.web.MockMultipartFile;
 
 import java.io.IOException;
 
@@ -16,6 +22,9 @@ import java.io.IOException;
 public class S3Controller {
     @Autowired
     private S3Service s3Service;
+
+    @Value("${computer.vision.token}")
+    private String tokenCV;
 
     @GetMapping("/buckets")
     public String listBuckets(Model model) {
@@ -80,4 +89,38 @@ public class S3Controller {
         response.flushBuffer();
     }
 
+    @PostMapping("/{bucketName}/vision/{key}")
+    public String computerVision(
+            @PathVariable String bucketName,
+            @PathVariable String key,
+            HttpServletResponse response) {
+        try {
+            byte[] fileBytes = s3Service.downloadFile(bucketName, key);
+
+            String cvJson = s3Service.computerVision(fileBytes, key);
+
+            DrawVisionService drawUtils = new DrawVisionService();
+            org.springframework.core.io.ByteArrayResource resource = new org.springframework.core.io.ByteArrayResource(fileBytes);
+            byte[] drawnBytes = drawUtils.DrawSquareCV(resource, cvJson);
+
+            String newKey = key.substring(0, key.lastIndexOf('.')) + "-with-cv.png";
+            MultipartFile newFile = new ByteArrayMultipartFile(
+                    drawnBytes,
+                    "file",
+                    newKey,
+                    "image/png"
+            );
+            s3Service.uploadFile(bucketName, newFile);
+
+            byte[] result = s3Service.downloadFile(bucketName, newKey);
+            response.setContentType("image/png");
+            response.setHeader("Content-Disposition", "inline; filename=\"" + newKey + "\"");
+            response.getOutputStream().write(result);
+            response.flushBuffer();
+            return null;
+
+        } catch (Exception e) {
+            throw new RuntimeException("Ошибка компьютерного зрения для файла " + key, e);
+        }
+    }
 }
